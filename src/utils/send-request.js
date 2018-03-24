@@ -113,6 +113,10 @@ function requestAPI (config, options, callback) {
     headers['User-Agent'] = config['user-agent']
   }
 
+  if (config.authorization){
+    headers['Authorization'] = config['authorization']
+  }
+
   if (options.multipart) {
     if (!options.multipartBoundary) {
       return callback(new Error('No multipartBoundary'))
