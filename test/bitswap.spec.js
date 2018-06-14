@@ -27,13 +27,16 @@ describe('.bitswap', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('.wantlist', (done) => {
     ipfs.bitswap.wantlist((err, res) => {
       expect(err).to.not.exist()
       expect(res).to.have.to.eql({
-        Keys: null
+        Keys: []
       })
       done()
     })

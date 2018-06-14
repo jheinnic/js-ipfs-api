@@ -6,10 +6,10 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const isNode = require('detect-node')
 const loadFixture = require('aegir/fixtures')
 const mh = require('multihashes')
 const CID = require('cids')
+const pull = require('pull-stream')
 
 const IPFSApi = require('../src')
 const f = require('./utils/factory')
@@ -46,7 +46,10 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('add file for testing', (done) => {
     ipfs.files.add(testfile, (err, res) => {
@@ -272,6 +275,52 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
+  it('files.addPullStream with object chunks and pull stream content', (done) => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    pull(
+      pull.values([{ content: pull.values([Buffer.from('test')]) }]),
+      ipfs.files.addPullStream(),
+      pull.collect((err, res) => {
+        if (err) return done(err)
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+        done()
+      })
+    )
+  })
+
+  it('files.add with pull stream (callback)', (done) => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    ipfs.files.add(pull.values([Buffer.from('test')]), (err, res) => {
+      if (err) return done(err)
+      expect(res).to.have.length(1)
+      expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      done()
+    })
+  })
+
+  it('files.add with pull stream (promise)', () => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    return ipfs.files.add(pull.values([Buffer.from('test')]))
+      .then((res) => {
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      })
+  })
+
+  it('files.add with array of objects with pull stream content', () => {
+    const expectedCid = 'QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm'
+
+    return ipfs.files.add([{ content: pull.values([Buffer.from('test')]) }])
+      .then((res) => {
+        expect(res).to.have.length(1)
+        expect(res[0]).to.deep.equal({ path: expectedCid, hash: expectedCid, size: 12 })
+      })
+  })
+
   it('files.mkdir', (done) => {
     ipfs.files.mkdir('/test-folder', done)
   })
@@ -280,22 +329,80 @@ describe('.files (the MFS API part)', function () {
     ipfs.files.flush('/', done)
   })
 
-  it('files.cp', (done) => {
-    ipfs.files.cp([
-      '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-      '/test-folder/test-file'
-    ], (err) => {
-      expect(err).to.not.exist()
-      done()
-    })
+  it('files.cp', () => {
+    const folder = `/test-folder-${Math.random()}`
+
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.cp([
+        '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+        `${folder}/test-file-${Math.random()}`
+      ]))
   })
 
-  it('files.ls', (done) => {
-    ipfs.files.ls('/test-folder', (err, res) => {
-      expect(err).to.not.exist()
-      expect(res.length).to.equal(1)
-      done()
-    })
+  it('files.cp with non-array arguments', () => {
+    const folder = `/test-folder-${Math.random()}`
+
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.cp(
+        '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+        `${folder}/test-file-${Math.random()}`
+      ))
+  })
+
+  it('files.mv', () => {
+    const folder = `/test-folder-${Math.random()}`
+    const source = `${folder}/test-file-${Math.random()}`
+    const dest = `${folder}/test-file-${Math.random()}`
+
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.cp(
+        '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+        source
+      ))
+      .then(() => ipfs.files.mv([
+        source,
+        dest
+      ]))
+  })
+
+  it('files.mv with non-array arguments', () => {
+    const folder = `/test-folder-${Math.random()}`
+    const source = `${folder}/test-file-${Math.random()}`
+    const dest = `${folder}/test-file-${Math.random()}`
+
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.cp(
+        '/ipfs/Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
+        source
+      ))
+      .then(() => ipfs.files.mv(
+        source,
+        dest
+      ))
+  })
+
+  it('files.ls', () => {
+    const folder = `/test-folder-${Math.random()}`
+    const file = `${folder}/test-file-${Math.random()}`
+
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.write(file, Buffer.from('Hello, world'), {
+        create: true
+      }))
+      .then(() => ipfs.files.ls(folder))
+      .then(files => {
+        expect(files.length).to.equal(1)
+      })
+  })
+
+  it('files.ls mfs root by default', () => {
+    const folder = `test-folder-${Math.random()}`
+
+    return ipfs.files.mkdir(`/${folder}`)
+      .then(() => ipfs.files.ls())
+      .then(files => {
+        expect(files.find(file => file.name === folder)).to.be.ok()
+      })
   })
 
   it('files.write', (done) => {
@@ -324,22 +431,27 @@ describe('.files (the MFS API part)', function () {
       })
   })
 
-  it('files.stat', (done) => {
-    ipfs.files.stat('/test-folder/test-file', (err, res) => {
-      expect(err).to.not.exist()
-      expect(res).to.deep.equal({
-        hash: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-        size: 12,
-        cumulativeSize: 20,
-        blocks: 0,
-        type: 'file',
-        withLocality: false,
-        local: undefined,
-        sizeLocal: undefined
-      })
+  it('files.stat', () => {
+    const folder = `/test-folder-${Math.random()}`
+    const file = `${folder}/test-file-${Math.random()}`
 
-      done()
-    })
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.write(file, testfile, {
+        create: true
+      }))
+      .then(() => ipfs.files.stat(file))
+      .then((stats) => {
+        expect(stats).to.deep.equal({
+          hash: 'QmQhouoDPAnzhVM148yCa9CbUXK65wSEAZBtgrLGHtmdmP',
+          size: 12,
+          cumulativeSize: 70,
+          blocks: 1,
+          type: 'file',
+          withLocality: false,
+          local: undefined,
+          sizeLocal: undefined
+        })
+      })
   })
 
   it('files.stat file that does not exist()', (done) => {
@@ -352,16 +464,18 @@ describe('.files (the MFS API part)', function () {
     })
   })
 
-  it('files.read', (done) => {
-    if (!isNode) {
-      return done()
-    }
+  it('files.read', () => {
+    const folder = `/test-folder-${Math.random()}`
+    const file = `${folder}/test-file-${Math.random()}`
 
-    ipfs.files.read('/test-folder/test-file', (err, buf) => {
-      expect(err).to.not.exist()
-      expect(Buffer.from(buf)).to.deep.equal(testfile)
-      done()
-    })
+    return ipfs.files.mkdir(folder)
+      .then(() => ipfs.files.write(file, testfile, {
+        create: true
+      }))
+      .then(() => ipfs.files.read(file))
+      .then((buf) => {
+        expect(Buffer.from(buf)).to.deep.equal(testfile)
+      })
   })
 
   it('files.rm without options', (done) => {

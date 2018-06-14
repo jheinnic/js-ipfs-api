@@ -1,3 +1,137 @@
+<a name="22.0.1"></a>
+## [22.0.1](https://github.com/ipfs/js-ipfs-api/compare/v22.0.0...v22.0.1) (2018-05-30)
+
+
+### Bug Fixes
+
+* configure webpack to not use esmodules in dependencies ([dc14333](https://github.com/ipfs/js-ipfs-api/commit/dc14333))
+* correctly differentiate pong responses ([4ad25a3](https://github.com/ipfs/js-ipfs-api/commit/4ad25a3))
+* util.addFromURL with URL-escaped file ([a3bd811](https://github.com/ipfs/js-ipfs-api/commit/a3bd811))
+
+
+
+<a name="22.0.0"></a>
+# [22.0.0](https://github.com/ipfs/js-ipfs-api/compare/v21.0.0...v22.0.0) (2018-05-20)
+
+
+### Bug Fixes
+
+* callback from unsub after stream ends ([51a80f2](https://github.com/ipfs/js-ipfs-api/commit/51a80f2))
+* do not fail stop node if failed start node ([533760f](https://github.com/ipfs/js-ipfs-api/commit/533760f))
+* **ping:** convert the ping messages to lowercase ([632af40](https://github.com/ipfs/js-ipfs-api/commit/632af40))
+* more robust ping tests ([fc6d301](https://github.com/ipfs/js-ipfs-api/commit/fc6d301))
+* remove .only ([0e21c8a](https://github.com/ipfs/js-ipfs-api/commit/0e21c8a))
+* result.Peers can be null, ensure callback is called ([f5f2e83](https://github.com/ipfs/js-ipfs-api/commit/f5f2e83))
+* update asserted error message ([17c1f1c](https://github.com/ipfs/js-ipfs-api/commit/17c1f1c))
+* use async/setImmediate vs process.nextTick ([faa51b4](https://github.com/ipfs/js-ipfs-api/commit/faa51b4))
+
+
+
+<a name="21.0.0"></a>
+# [21.0.0](https://github.com/ipfs/js-ipfs-api/compare/v20.2.1...v21.0.0) (2018-05-12)
+
+
+### Bug Fixes
+
+* make pubsub.unsubscribe async and alter pubsub.subscribe signature ([b98f8f3](https://github.com/ipfs/js-ipfs-api/commit/b98f8f3))
+
+
+### BREAKING CHANGES
+
+* pubsub.unsubscribe is now async and argument order for pubsub.subscribe has changed
+
+License: MIT
+Signed-off-by: Alan Shaw <alan@tableflip.io>
+
+
+
+<a name="20.2.1"></a>
+## [20.2.1](https://github.com/ipfs/js-ipfs-api/compare/v20.2.0...v20.2.1) (2018-05-06)
+
+
+
+<a name="20.2.0"></a>
+# [20.2.0](https://github.com/ipfs/js-ipfs-api/compare/v20.0.1...v20.2.0) (2018-04-30)
+
+
+### Bug Fixes
+
+* adding files by pull stream ([2fa16c5](https://github.com/ipfs/js-ipfs-api/commit/2fa16c5))
+* handle request errors in addFromURL ([7c5cea5](https://github.com/ipfs/js-ipfs-api/commit/7c5cea5))
+* increase timeout for name.publish and fix setup code ([ceb1106](https://github.com/ipfs/js-ipfs-api/commit/ceb1106))
+* ipfs add url wrap doesn't work ([#750](https://github.com/ipfs/js-ipfs-api/issues/750)) ([f6f1bf0](https://github.com/ipfs/js-ipfs-api/commit/f6f1bf0))
+
+
+### Features
+
+* Add offset/length arguments to files.cat ([17967c1](https://github.com/ipfs/js-ipfs-api/commit/17967c1))
+* get it ready for release ([#751](https://github.com/ipfs/js-ipfs-api/issues/751)) ([1885af4](https://github.com/ipfs/js-ipfs-api/commit/1885af4))
+
+
+
+<a name="20.1.0"></a>
+# [20.1.0](https://github.com/ipfs/js-ipfs-api/compare/v20.0.1...v20.1.0) (2018-04-30)
+
+
+### Bug Fixes
+
+* adding files by pull stream ([2fa16c5](https://github.com/ipfs/js-ipfs-api/commit/2fa16c5))
+* handle request errors in addFromURL ([7c5cea5](https://github.com/ipfs/js-ipfs-api/commit/7c5cea5))
+* increase timeout for name.publish and fix setup code ([ceb1106](https://github.com/ipfs/js-ipfs-api/commit/ceb1106))
+* ipfs add url wrap doesn't work ([#750](https://github.com/ipfs/js-ipfs-api/issues/750)) ([f6f1bf0](https://github.com/ipfs/js-ipfs-api/commit/f6f1bf0))
+
+
+### Features
+
+* Add offset/length arguments to files.cat ([17967c1](https://github.com/ipfs/js-ipfs-api/commit/17967c1))
+* get it ready for release ([#751](https://github.com/ipfs/js-ipfs-api/issues/751)) ([1885af4](https://github.com/ipfs/js-ipfs-api/commit/1885af4))
+
+
+
+<a name="20.0.1"></a>
+## [20.0.1](https://github.com/ipfs/js-ipfs-api/compare/v20.0.0...v20.0.1) (2018-04-12)
+
+
+
+<a name="20.0.0"></a>
+# [20.0.0](https://github.com/ipfs/js-ipfs-api/compare/v19.0.0...v20.0.0) (2018-04-05)
+
+
+### Bug Fixes
+
+* **dag:** js-ipld format resolver take the raw block ([2683c7e](https://github.com/ipfs/js-ipfs-api/commit/2683c7e))
+* **dag:** path logic for DAG get was wrong ([d2b203b](https://github.com/ipfs/js-ipfs-api/commit/d2b203b))
+* **dag:** use SendOneFile for dag put ([9c37213](https://github.com/ipfs/js-ipfs-api/commit/9c37213))
+
+
+### Features
+
+* dag.put ([9463d3a](https://github.com/ipfs/js-ipfs-api/commit/9463d3a))
+* **dag:** proper get implementation ([7ba0343](https://github.com/ipfs/js-ipfs-api/commit/7ba0343))
+* **dag:** rebase, use waterfall for put ([ad9eab8](https://github.com/ipfs/js-ipfs-api/commit/ad9eab8))
+* **dag:** update option names to reflect go-ipfs API ([9bf1c6c](https://github.com/ipfs/js-ipfs-api/commit/9bf1c6c))
+* Provide access to bundled libraries when in browser ([#732](https://github.com/ipfs/js-ipfs-api/issues/732)) ([994bdad](https://github.com/ipfs/js-ipfs-api/commit/994bdad)), closes [#406](https://github.com/ipfs/js-ipfs-api/issues/406)
+* public-readonly-method-for-getting-host-and-port ([41d32e3](https://github.com/ipfs/js-ipfs-api/commit/41d32e3)), closes [#580](https://github.com/ipfs/js-ipfs-api/issues/580)
+* Wrap with dir ([#730](https://github.com/ipfs/js-ipfs-api/issues/730)) ([160860e](https://github.com/ipfs/js-ipfs-api/commit/160860e))
+
+
+
+<a name="19.0.0"></a>
+# [19.0.0](https://github.com/ipfs/js-ipfs-api/compare/v18.2.1...v19.0.0) (2018-03-28)
+
+
+### Bug Fixes
+
+* **bitswap:** 0.4.14 returns empty array instead of null ([5e37a54](https://github.com/ipfs/js-ipfs-api/commit/5e37a54))
+* **ping:** tests were failing and there it was missing to catch when count and n are used at the same time ([2181568](https://github.com/ipfs/js-ipfs-api/commit/2181568))
+
+
+### Features
+
+* streamable ping and optional packet number ([#723](https://github.com/ipfs/js-ipfs-api/issues/723)) ([3f3ce8a](https://github.com/ipfs/js-ipfs-api/commit/3f3ce8a))
+
+
+
 <a name="18.2.1"></a>
 ## [18.2.1](https://github.com/ipfs/js-ipfs-api/compare/v18.2.0...v18.2.1) (2018-03-22)
 

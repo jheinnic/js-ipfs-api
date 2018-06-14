@@ -11,7 +11,7 @@ const IPFSApi = require('../src')
 const f = require('./utils/factory')
 
 describe('.commands', function () {
-  this.timeout(20 * 1000)
+  this.timeout(60 * 1000)
 
   let ipfsd
   let ipfs
@@ -25,7 +25,10 @@ describe('.commands', function () {
     })
   })
 
-  after((done) => ipfsd.stop(done))
+  after((done) => {
+    if (!ipfsd) return done()
+    ipfsd.stop(done)
+  })
 
   it('lists commands', (done) => {
     ipfs.commands((err, res) => {
